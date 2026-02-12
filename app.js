@@ -12,15 +12,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // checkHealthAndLoad is now called inside updateAuthStateUI once session is confirmed
 });
 
-// State Management
-let appState = {
-    currentView: 'form',
-    blocks: [],
-    currentBlock: null,
-    isEditing: false,
-    currentCarouselIndex: 0,
-    currentCarouselPhotos: []
-};
+// Application State
+let currentView = 'form';
+let blocks = [];
+let currentBlock = null;
+let isEditing = false;
+let currentCarouselIndex = 0;
+let currentCarouselPhotos = [];
 
 // Initialize Supabase Auth
 async function initAuth() {
@@ -63,8 +61,10 @@ function updateAuthStateUI() {
         authNav.style.display = 'flex';
         document.getElementById('user-email-display').textContent = session.user.email;
 
-        // Initial load only after auth
-        checkHealthAndLoad();
+        // Ensure we load content
+        if (blocks.length === 0) {
+            checkHealthAndLoad();
+        }
     } else {
         loginView.classList.add('active');
         appContent.style.display = 'none';

@@ -19,7 +19,15 @@ cloudinary.config({
 
 // Supabase Admin for token verification
 const { createClient } = require('@supabase/supabase-js');
-const supabaseAdmin = createClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_KEY || '');
+
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+    console.error('CRITICAL: Supabase credentials missing from environment variables!');
+}
+
+const supabaseAdmin = createClient(
+    process.env.SUPABASE_URL || 'https://placeholder.supabase.co',
+    process.env.SUPABASE_KEY || 'placeholder'
+);
 
 // Authentication Middleware
 const authenticate = async (req, res, next) => {
