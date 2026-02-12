@@ -927,6 +927,12 @@ body::before {
 }
 
 /* Auth Styles */
+#app-content,
+.view,
+#auth-nav {
+  display: none;
+}
+
 .login-view {
   display: none;
   align-items: center;
