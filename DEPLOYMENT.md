@@ -5,27 +5,26 @@ Para colocar seu app no ar para todo mundo acessar, siga estes passos simples:
 ## 1. Prepare seu código
 Eu já deixei os arquivos prontos:
 - `Dockerfile`: Ensina o servidor como rodar seu app.
-- `server.js`: Atualizado para funcionar em nuvem.
-- `.env.example`: Guia de configurações.
+- `server.js`: Atualizado para autenticação e nuvem.
+- `package.json`: Com as novas dependências de login.
 
 ## 2. Envie para o GitHub
-1. Crie um repositório no [GitHub](https://github.com).
-2. Suba todos os arquivos da pasta do projeto para lá.
+1. Abra o seu repositório no [GitHub](https://github.com).
+2. Suba (Upload) os arquivos que alteramos (principalmente `server.js`, `app.js`, `index.html`, `styles.css` e `package.json`).
 
-## 3. Conecte ao Render (Recomendado)
-O **Render** é gratuito para iniciar e muito fácil:
-1. Crie uma conta em [render.com](https://render.com).
-2. Clique em **"New +"** > **"Web Service"**.
-3. Conecte sua conta do GitHub e selecione o repositório do app.
-4. **Configurações Importantes**:
-   - **Runtime**: Selecione `Docker`.
-   - **Disk (Obrigatório para fotos)**: Vá em "Advanced" > "Disks".
-     - Adicione um disco com o caminho `/app/uploads`. Isso garante que suas fotos não sumam!
-     - Adicione outro disco (opcional mas recomendado) para `/app/blocks.db`.
+## 3. Configurações no Render
+Se o seu app já está no Render, você só precisa adicionar as novas variáveis:
+1. Acesse o seu painel do [Render](https://dashboard.render.com).
+2. Selecione o serviço `controle-fotos-dos-blocos`.
+3. Vá em **"Environment"**.
+4. Adicione as seguintes variáveis (as mesmas do Supabase):
+   - `SUPABASE_URL`: (Sua URL do Supabase)
+   - `SUPABASE_KEY`: (Sua Key Anon do Supabase)
+5. Clique em **"Save Changes"**.
 
-## 4. Acesse seu link!
-O Render vai te dar um link como `seu-app.onrender.com`. Pronto, seu inventário está na internet!
+## 4. Deploy!
+O Render deve detectar a mudança no GitHub e fazer o deploy automático. Em alguns minutos, sua URL `https://controle-fotos-dos-blocos.onrender.com/` terá o sistema de login ativo!
 
 ---
 > [!IMPORTANT]
-> Lembre-se que em planos gratuitos o servidor "dorme" após algum tempo sem uso, e pode demorar alguns segundos para acordar na primeira visita.
+> A segurança agora é real: sem login, ninguém conseguirá ver ou alterar seus dados no banco de dados.

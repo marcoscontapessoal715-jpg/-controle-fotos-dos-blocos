@@ -119,6 +119,15 @@ async function fetchWithRetry(url, options = {}, retries = 3, backoff = 1000) {
             // Handle success
             if (response.ok) return response;
 
+            // Handle 401 (Unauthorized)
+            if (response.status === 401 && !url.includes('/health')) {
+                console.warn('Sessão inválida ou expirada. Fazendo logout...');
+                if (supabaseClient) {
+                    await supabaseClient.auth.signOut();
+                }
+                return response;
+            }
+
             // If we get a 503, it's definitely a cold start/overload
             if (response.status === 503 || response.status === 504 || response.status === 502) {
                 console.warn(`Attempt ${i + 1} failed with ${response.status}. Retrying...`);

@@ -58,6 +58,21 @@ Para acessar de outros dispositivos:
 1. Encontre o IP do computador (ex: 192.168.1.100)
 2. Acesse: `http://192.168.1.100:3000`
 
+## Produção e Monitoramento
+
+Este aplicativo foi otimizado para ambientes de produção empresariais, especialmente em infraestruturas que utilizam hibernação (como o plano free do Render).
+
+### Recursos de Estabilidade
+- **Health Check Robusto**: O endpoint `/health` verifica a conectividade com o banco de dados Supabase em tempo real.
+- **Cold Start Handling**: O frontend detecta automaticamente se o servidor está "acordando" e exibe uma mensagem amigável ao usuário.
+- **Retry Automático**: Falhas temporárias (erro 503/504) são resolvidas com até 3 tentativas automáticas com backoff exponencial.
+
+### Recomendação de Monitoramento
+Para garantir que seu sistema esteja sempre disponível:
+1. Use o **[UptimeRobot](https://uptimerobot.com/)** (plano gratuito disponível).
+2. Configure uma verificação HTTP para `https://seu-app.render.com/health`.
+3. Defina o intervalo para 5 ou 10 minutos para evitar que o servidor entre em hibernação profunda.
+
 ## Desenvolvido com ❤️
 
-Sistema profissional e confiável para empresas.
+Sistema profissional e confiável para empresas que buscam excelência operacional.

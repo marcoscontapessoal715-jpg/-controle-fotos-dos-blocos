@@ -23,20 +23,28 @@ const supabaseAdmin = createClient(process.env.SUPABASE_URL || '', process.env.S
 
 // Authentication Middleware
 const authenticate = async (req, res, next) => {
+    console.log(`[AUTH] Verificando acesso: ${req.method} ${req.path}`);
     try {
         const authHeader = req.headers.authorization;
-        if (!authHeader) return res.status(401).json({ error: 'Não autenticado' });
+        if (!authHeader) {
+            console.warn('[AUTH] Cabeçalho de autorização ausente');
+            return res.status(401).json({ error: 'Não autenticado' });
+        }
 
         const token = authHeader.replace('Bearer ', '');
         const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
 
-        if (error || !user) return res.status(401).json({ error: 'Sessão inválida ou expirada' });
+        if (error || !user) {
+            console.warn('[AUTH] Sessão inválida ou o usuário não existe:', error?.message);
+            return res.status(401).json({ error: 'Sessão inválida ou expirada' });
+        }
 
+        console.log(`[AUTH] Acesso permitido para: ${user.email}`);
         req.user = user;
         next();
     } catch (err) {
-        console.error('Auth Middleware Error:', err);
-        res.status(500).json({ error: 'Erro de autenticação' });
+        console.error('[AUTH] Erro interno no Middleware:', err);
+        res.status(500).json({ error: 'Erro interno de autenticação' });
     }
 };
 
