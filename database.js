@@ -85,11 +85,22 @@ async function searchBlocks(query) {
     return data;
 }
 
+// Test database connection
+async function testConnection() {
+    try {
+        const { error } = await supabase.from('blocks').select('id').limit(1);
+        return { connected: !error, error: error ? error.message : null };
+    } catch (err) {
+        return { connected: false, error: err.message };
+    }
+}
+
 module.exports = {
     createBlock,
     getAllBlocks,
     getBlockById,
     updateBlock,
     deleteBlock,
-    searchBlocks
+    searchBlocks,
+    testConnection
 };

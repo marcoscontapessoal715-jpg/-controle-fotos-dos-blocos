@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Sistema profissional de gerenciamento de inventário de blocos com documentação fotográfica completa">
+    <title>Inventário de Blocos - Sistema Empresarial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-icon">📦</span>
+                    Inventário de Blocos
+                </h1>
+                <nav class="nav">
+                    <div id="auth-nav" style="display: none; align-items: center; gap: var(--spacing-md);">
+                        <button class="nav-btn active" data-view="form">
+                            <span class="nav-icon">➕</span>
+                            Novo Bloco
+                        </button>
+                        <button class="nav-btn" data-view="gallery">
+                            <span class="nav-icon">🖼️</span>
+                            Galeria
+                        </button>
+                        <div class="user-profile" id="user-profile">
+                            <button class="profile-btn" id="profile-btn">
+                                <span class="user-avatar" id="user-avatar">👤</span>
+                                <span class="user-email" id="user-email-display">usuario@email.com</span>
+                                <span class="dropdown-icon">▾</span>
+                            </button>
+                            <div class="profile-dropdown" id="profile-dropdown">
+                                <button class="dropdown-item" id="logout-btn">
+                                    <span class="icon">🚪</span> Sair
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Login View -->
+            <section id="login-view" class="view login-view">
+                <div class="login-card">
+                    <div class="login-header">
+                        <span class="login-logo-icon">📦</span>
+                        <h2 class="login-title">Acesso ao Sistema</h2>
+                        <p class="login-subtitle">Gerenciamento de Inventário de Blocos</p>
+                    </div>
+
+                    <form id="login-form" class="auth-form">
+                        <div class="form-group">
+                            <label for="login-email" class="form-label">E-mail</label>
+                            <input type="email" id="login-email" class="form-input" placeholder="seu@email.com"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password" class="form-label">Senha</label>
+                            <input type="password" id="login-password" class="form-input" placeholder="••••••••"
+                                required>
+                        </div>
+
+                        <div class="auth-actions">
+                            <button type="submit" class="btn btn-primary btn-full" id="btn-login-submit">
+                                Entrar
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-full" id="btn-toggle-auth">
+                                Não tem uma conta? Cadastre-se
+                            </button>
+                        </div>
+                    </form>
+
+                    <form id="signup-form" class="auth-form" style="display: none;">
+                        <div class="form-group">
+                            <label for="signup-email" class="form-label">E-mail</label>
+                            <input type="email" id="signup-email" class="form-input" placeholder="seu@email.com"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password" class="form-label">Senha</label>
+                            <input type="password" id="signup-password" class="form-input"
+                                placeholder="Mínimo 6 caracteres" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-confirm" class="form-label">Confirmar Senha</label>
+                            <input type="password" id="signup-confirm" class="form-input" placeholder="••••••••"
+                                required minlength="6">
+                        </div>
+
+                        <div class="auth-actions">
+                            <button type="submit" class="btn btn-primary btn-full" id="btn-signup-submit">
+                                Criar Conta
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-full" id="btn-toggle-auth-back">
+                                Já tem uma conta? Entre
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- App Views Wrapper (hidden when not logged in) -->
+            <div id="app-content" style="display: none;">
+                <!-- Form View -->
+                <section id="form-view" class="view active">
+                    <div class="form-card">
+                        <h2 class="form-title">Cadastrar Novo Bloco</h2>
+                        <p class="form-subtitle">Preencha as informações do bloco e anexe as fotos dos 4 lados</p>
+
+                        <form id="block-form" class="form">
+                            <!-- Basic Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Informações Básicas</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="code" class="form-label">Código *</label>
+                                        <input type="text" id="code" name="code" class="form-input" required>
+                                        <span class="form-hint">Código único do bloco</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="material" class="form-label">Material *</label>
+                                        <input type="text" id="material" name="material" class="form-input" required>
+                                        <span class="form-hint">Ex: Granito, Mármore, etc.</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="classification" class="form-label">Classificação *</label>
+                                        <select id="classification" name="classification" class="form-input" required>
+                                            <option value="" disabled selected>Selecione a classificação</option>
+                                            <option value="STANDARD A">STANDARD A</option>
+                                            <option value="STANDARD B">STANDARD B</option>
+                                            <option value="FIRST">FIRST</option>
+                                            <option value="COMERCIAL">COMERCIAL</option>
+                                        </select>
+                                        <span class="form-hint">Qualidade do material</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dimensions -->
+                            <div class="form-section">
+                                <h3 class="section-title">Dimensões (metros)</h3>
+                                <div class="form-grid form-grid-3">
+                                    <div class="form-group">
+                                        <label for="height" class="form-label">Altura *</label>
+                                        <input type="number" id="height" name="height" class="form-input" step="0.01"
+                                            min="0" required>
+                                        <span class="form-hint">Em metros</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="width" class="form-label">Largura *</label>
+                                        <input type="number" id="width" name="width" class="form-input" step="0.01"
+                                            min="0" required>
+                                        <span class="form-hint">Em metros</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="length" class="form-label">Comprimento *</label>
+                                        <input type="number" id="length" name="length" class="form-input" step="0.01"
+                                            min="0" required>
+                                        <span class="form-hint">Em metros</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Photos -->
+                            <div class="form-section">
+                                <h3 class="section-title">Fotos do Bloco</h3>
+                                <p class="section-description">Anexe fotos dos 4 lados do bloco para documentação
+                                    completa</p>
+
+                                <div class="photo-grid">
+                                    <!-- Front Photo -->
+                                    <div class="photo-upload">
+                                        <input type="file" id="photo_front" name="photo_front" accept="image/*"
+                                            class="photo-input">
+                                        <label for="photo_front" class="photo-label">
+                                            <div class="photo-preview" id="preview_front">
+                                                <span class="photo-icon">📷</span>
+                                                <span class="photo-text">Frente</span>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Back Photo -->
+                                    <div class="photo-upload">
+                                        <input type="file" id="photo_back" name="photo_back" accept="image/*"
+                                            class="photo-input">
+                                        <label for="photo_back" class="photo-label">
+                                            <div class="photo-preview" id="preview_back">
+                                                <span class="photo-icon">📷</span>
+                                                <span class="photo-text">Trás</span>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Left Photo -->
+                                    <div class="photo-upload">
+                                        <input type="file" id="photo_left" name="photo_left" accept="image/*"
+                                            class="photo-input">
+                                        <label for="photo_left" class="photo-label">
+                                            <div class="photo-preview" id="preview_left">
+                                                <span class="photo-icon">📷</span>
+                                                <span class="photo-text">Lado Esquerdo</span>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Right Photo -->
+                                    <div class="photo-upload">
+                                        <input type="file" id="photo_right" name="photo_right" accept="image/*"
+                                            class="photo-input">
+                                        <label for="photo_right" class="photo-label">
+                                            <div class="photo-preview" id="preview_right">
+                                                <span class="photo-icon">📷</span>
+                                                <span class="photo-text">Lado Direito</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="submit-btn">
+                                    <span class="btn-icon">✓</span>
+                                    Salvar Bloco
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="cancel-btn">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Gallery View -->
+                <section id="gallery-view" class="view">
+                    <div class="gallery-header">
+                        <h2 class="gallery-title">Galeria de Blocos</h2>
+
+                        <!-- Search and Filter -->
+                        <div class="gallery-controls">
+                            <div class="search-box">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" id="search-input" class="search-input"
+                                    placeholder="Buscar por código ou material...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Grid -->
+                    <div id="gallery-grid" class="gallery-grid">
+                        <!-- Blocks will be dynamically inserted here -->
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="empty-state" class="empty-state">
+                        <span class="empty-icon">📦</span>
+                        <h3 class="empty-title">Nenhum bloco cadastrado</h3>
+                        <p class="empty-text">Comece adicionando seu primeiro bloco no formulário</p>
+                        <button class="btn btn-primary" data-view="form">
+                            <span class="btn-icon">➕</span>
+                            Adicionar Bloco
+                        </button>
+                    </div>
+                </section>
+            </div> <!-- End #app-content -->
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p class="loading-text" id="loading-text">Carregando...</p>
+        <p class="waking-up-text" id="waking-up-text">O servidor está acordando... Por favor, aguarde.</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Photo Modal -->
+    <div id="photo-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">×</button>
+            <div class="modal-body">
+                <div class="carousel">
+                    <button class="carousel-btn carousel-prev" id="carousel-prev">‹</button>
+                    <div class="carousel-container">
+                        <img id="carousel-image" class="carousel-image" src="" alt="">
+                        <div class="carousel-caption" id="carousel-caption"></div>
+                    </div>
+                    <button class="carousel-btn carousel-next" id="carousel-next">›</button>
+                </div>
+                <div class="carousel-dots" id="carousel-dots"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

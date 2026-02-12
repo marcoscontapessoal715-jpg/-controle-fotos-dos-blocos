@@ -17,6 +17,32 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// Supabase Admin for token verification
+const { createClient } = require('@supabase/supabase-js');
+const supabaseAdmin = createClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_KEY || '');
+
+// Authentication Middleware
+const authenticate = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) return res.status(401).json({ error: 'Não autenticado' });
+
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+
+        if (error || !user) return res.status(401).json({ error: 'Sessão inválida ou expirada' });
+
+        req.user = user;
+        next();
+    } catch (err) {
+        console.error('Auth Middleware Error:', err);
+        res.status(500).json({ error: 'Erro de autenticação' });
+    }
+};
+
+// Protect all /api/blocks routes
+app.use('/api/blocks', authenticate);
+
 // Configure Cloudinary storage for Multer
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
@@ -34,13 +60,40 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check
-app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'OK', timestamp: new Date() });
+// Request logging (Simple monitoring)
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} - ${duration}ms`);
+    });
+    next();
+});
+
+// Health check with DB status
+app.get('/health', async (req, res) => {
+    const dbStatus = await db.testConnection();
+    const status = {
+        server: 'OK',
+        database: dbStatus.connected ? 'OK' : 'ERROR',
+        db_error: dbStatus.error,
+        timestamp: new Date()
+    };
+
+    const statusCode = dbStatus.connected ? 200 : 503;
+    res.status(statusCode).json(status);
 });
 
 // Serve static files from public directory
 app.use(express.static('public'));
+
+// Config endpoint for frontend
+app.get('/api/config', (req, res) => {
+    res.json({
+        supabaseUrl: process.env.SUPABASE_URL,
+        supabaseKey: process.env.SUPABASE_KEY
+    });
+});
 
 // API Routes
 app.get('/api/blocks', async (req, res) => {
