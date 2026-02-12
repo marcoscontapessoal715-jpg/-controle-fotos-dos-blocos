@@ -106,7 +106,7 @@ async function handleFormSubmit(event) {
         field => formData.get(field)?.size > 0
     );
 
-    if (!hasPhotos) {
+    if (!isEditing && !hasPhotos) {
         showToast('Por favor, adicione pelo menos uma foto', 'warning');
         return;
     }

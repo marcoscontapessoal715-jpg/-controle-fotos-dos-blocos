@@ -118,7 +118,7 @@ app.put('/api/blocks/:id', upload.fields([
     { name: 'photo_right', maxCount: 1 }
 ]), async (req, res) => {
     try {
-        const { code, material, height, width, length } = req.body;
+        const { code, material, height, width, length, classification } = req.body;
         const existingBlock = await db.getBlockById(req.params.id);
 
         if (!existingBlock) {
