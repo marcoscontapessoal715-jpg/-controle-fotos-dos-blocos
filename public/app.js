@@ -203,7 +203,7 @@ function renderGallery() {
 
     gallery.innerHTML = blocks.map(block => {
         const mainPhoto = block.photo_front || block.photo_back || block.photo_left || block.photo_right;
-        const photoUrl = mainPhoto ? `/uploads/${mainPhoto}` : '';
+        const photoUrl = getImageUrl(mainPhoto);
 
         return `
       <div class="block-card" data-id="${block.id}">
@@ -280,7 +280,7 @@ function updateCarousel() {
     const caption = document.getElementById('carousel-caption');
     const dots = document.getElementById('carousel-dots');
 
-    image.src = `/uploads/${photo.url}`;
+    image.src = getImageUrl(photo.url);
     caption.textContent = photo.label;
 
     // Update dots
@@ -331,7 +331,7 @@ async function editBlock(blockId) {
         if (photoUrl) {
             const preview = document.getElementById(`preview_${side}`);
             preview.innerHTML = `
-        <img src="/uploads/${photoUrl}" alt="${side}">
+        <img src="${getImageUrl(photoUrl)}" alt="${side}">
         <span class="photo-text">${getSideLabel(side)}</span>
       `;
             preview.classList.add('has-image');
@@ -399,6 +399,12 @@ function showToast(message, type = 'success') {
         toast.style.animation = 'slideIn 0.25s ease reverse';
         setTimeout(() => toast.remove(), 250);
     }, 3000);
+}
+
+function getImageUrl(url) {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `/uploads/${url}`;
 }
 
 // Make functions globally accessible
