@@ -158,6 +158,8 @@ function resetForm() {
         preview.classList.remove('has-image');
     });
 
+    document.getElementById('classification').value = '';
+
     isEditing = false;
     currentBlock = null;
     document.getElementById('submit-btn').innerHTML = `
@@ -211,7 +213,10 @@ function renderGallery() {
                 '<div class="block-image" style="display: flex; align-items: center; justify-content: center; font-size: 3rem; opacity: 0.3;">📦</div>'}
         <div class="block-content">
           <div class="block-code">${block.code}</div>
-          <div class="block-material">${block.material}</div>
+          <div class="block-material">
+            ${block.material} 
+            <span class="badge">${block.classification || 'N/A'}</span>
+          </div>
           <div class="block-dimensions">
             <div class="dimension-item">
               <span class="dimension-label">Altura</span>
@@ -324,6 +329,7 @@ async function editBlock(blockId) {
     document.getElementById('height').value = block.height;
     document.getElementById('width').value = block.width;
     document.getElementById('length').value = block.length;
+    document.getElementById('classification').value = block.classification || '';
 
     // Show existing photos
     ['front', 'back', 'left', 'right'].forEach(side => {

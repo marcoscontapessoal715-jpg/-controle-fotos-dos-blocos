@@ -84,15 +84,16 @@ app.post('/api/blocks', upload.fields([
     { name: 'photo_right', maxCount: 1 }
 ]), async (req, res) => {
     try {
-        const { code, material, height, width, length } = req.body;
+        const { code, material, height, width, length, classification } = req.body;
 
-        if (!code || !material || !height || !width || !length) {
+        if (!code || !material || !height || !width || !length || !classification) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
         const blockData = {
             code,
             material,
+            classification,
             height: parseFloat(height),
             width: parseFloat(width),
             length: parseFloat(length),
@@ -127,6 +128,7 @@ app.put('/api/blocks/:id', upload.fields([
         const blockData = {
             code: code || existingBlock.code,
             material: material || existingBlock.material,
+            classification: classification || existingBlock.classification,
             height: height ? parseFloat(height) : existingBlock.height,
             width: width ? parseFloat(width) : existingBlock.width,
             length: length ? parseFloat(length) : existingBlock.length,
