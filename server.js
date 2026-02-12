@@ -29,8 +29,37 @@ const supabaseAdmin = createClient(
     process.env.SUPABASE_KEY || 'placeholder'
 );
 
+// Basic Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Request logging
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} - ${duration}ms`);
+    });
+    next();
+});
+
+// Configure Cloudinary storage for Multer
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'block-inventory',
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif'],
+        public_id: (req, file) => Date.now() + '-' + Math.round(Math.random() * 1E9)
+    }
+});
+
+const upload = multer({ storage: storage });
+
 // Authentication Middleware
 const authenticate = async (req, res, next) => {
+    if (req.method === 'OPTIONS') return next();
+
     console.log(`[AUTH] Verificando acesso: ${req.method} ${req.path}`);
     try {
         const authHeader = req.headers.authorization;
@@ -58,33 +87,6 @@ const authenticate = async (req, res, next) => {
 
 // Protect all /api/blocks routes
 app.use('/api/blocks', authenticate);
-
-// Configure Cloudinary storage for Multer
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'block-inventory',
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif'],
-        public_id: (req, file) => Date.now() + '-' + Math.round(Math.random() * 1E9)
-    }
-});
-
-const upload = multer({ storage: storage });
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Request logging (Simple monitoring)
-app.use((req, res, next) => {
-    const start = Date.now();
-    res.on('finish', () => {
-        const duration = Date.now() - start;
-        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} - ${duration}ms`);
-    });
-    next();
-});
 
 // Health check with DB status
 app.get('/health', async (req, res) => {

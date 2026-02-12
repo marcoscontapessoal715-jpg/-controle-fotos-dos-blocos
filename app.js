@@ -57,16 +57,20 @@ function updateAuthStateUI() {
 
     if (session) {
         loginView.classList.remove('active');
-        appContent.style.display = 'block';
-        authNav.style.display = 'flex';
         document.getElementById('user-email-display').textContent = session.user.email;
 
-        // Ensure we load content
+        // Force visibility
+        appContent.classList.add('active');
+        loginView.classList.remove('active');
+        appContent.style.display = 'block';
+        authNav.style.display = 'flex';
+
         if (blocks.length === 0) {
             checkHealthAndLoad();
         }
     } else {
         loginView.classList.add('active');
+        appContent.classList.remove('active');
         appContent.style.display = 'none';
         authNav.style.display = 'none';
         showLoading(false);
@@ -98,10 +102,17 @@ async function fetchWithRetry(url, options = {}, retries = 3, backoff = 1000) {
     let isWakingUp = false;
 
     // Automatically add authorization header if logged in
-    if (session && session.access_token) {
+    // We try to get the latest session from the client if available
+    let currentSession = session;
+    if (supabaseClient) {
+        const { data } = await supabaseClient.auth.getSession();
+        if (data.session) currentSession = data.session;
+    }
+
+    if (currentSession && currentSession.access_token) {
         options.headers = {
-            ...options.headers,
-            'Authorization': `Bearer ${session.access_token}`
+            ...(options.headers || {}),
+            'Authorization': `Bearer ${currentSession.access_token}`
         };
     }
 
