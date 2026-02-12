@@ -60,11 +60,11 @@ const upload = multer({ storage: storage });
 const authenticate = async (req, res, next) => {
     if (req.method === 'OPTIONS') return next();
 
-    console.log(`[AUTH] Verificando acesso: ${req.method} ${req.path}`);
+    const timestamp = new Date().toISOString();
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-            console.warn('[AUTH] Cabeçalho de autorização ausente');
+            console.warn(`[${timestamp}] [AUTH ERROR] Header missing or empty. Path: ${req.path}`);
             return res.status(401).json({ error: 'Não autenticado' });
         }
 
@@ -72,15 +72,15 @@ const authenticate = async (req, res, next) => {
         const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
 
         if (error || !user) {
-            console.warn('[AUTH] Sessão inválida ou o usuário não existe:', error?.message);
+            console.warn(`[${timestamp}] [AUTH ERROR] Supabase rejected token. Error: ${error?.message}. Path: ${req.path}`);
             return res.status(401).json({ error: 'Sessão inválida ou expirada' });
         }
 
-        console.log(`[AUTH] Acesso permitido para: ${user.email}`);
+        console.log(`[${timestamp}] [AUTH SUCCESS] Access granted to ${user.email} for ${req.method} ${req.path}`);
         req.user = user;
         next();
     } catch (err) {
-        console.error('[AUTH] Erro interno no Middleware:', err);
+        console.error(`[${timestamp}] [AUTH CRITICAL] Middleware error:`, err);
         res.status(500).json({ error: 'Erro interno de autenticação' });
     }
 };

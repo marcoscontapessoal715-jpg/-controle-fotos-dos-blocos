@@ -102,18 +102,23 @@ async function fetchWithRetry(url, options = {}, retries = 3, backoff = 1000) {
     let isWakingUp = false;
 
     // Automatically add authorization header if logged in
-    // We try to get the latest session from the client if available
     let currentSession = session;
-    if (supabaseClient) {
+
+    // If the global session is missing, try to get it again from the client
+    if (!currentSession && supabaseClient) {
+        console.log(`[DEBUG] Global session missing for ${url}, trying getSession()...`);
         const { data } = await supabaseClient.auth.getSession();
-        if (data.session) currentSession = data.session;
+        currentSession = data.session;
     }
 
     if (currentSession && currentSession.access_token) {
+        console.log(`[DEBUG] Adding Auth header for ${url} (User: ${currentSession.user?.email})`);
         options.headers = {
             ...(options.headers || {}),
             'Authorization': `Bearer ${currentSession.access_token}`
         };
+    } else {
+        console.warn(`[DEBUG] Auth header NOT added for ${url}. session: ${!!currentSession}, token: ${!!currentSession?.access_token}`);
     }
 
     for (let i = 0; i < retries; i++) {
